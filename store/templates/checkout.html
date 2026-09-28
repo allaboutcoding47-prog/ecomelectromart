@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3 class="text-center mb-4">💳 Checkout</h3>
+
+<div class="row">
+
+    <!-- LEFT -->
+    <div class="col-md-6">
+        <div class="card p-4">
+
+            <h5>Select Payment Method</h5>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment" value="online" onclick="showOnline()" checked>
+                <label class="form-check-label">💳 Pay Online</label>
+            </div>
+
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="radio" name="payment" value="cod" onclick="showCOD()">
+                <label class="form-check-label">💵 Cash on Delivery</label>
+            </div>
+
+            <hr>
+
+            <div id="onlineBox">
+
+                <h6>Choose Payment Option</h6>
+
+                <div><input type="radio" name="upi_type" value="phonepe" onclick="showOption('phonepe')" checked> PhonePe</div>
+                <div><input type="radio" name="upi_type" value="gpay" onclick="showOption('gpay')"> Google Pay</div>
+                <div><input type="radio" name="upi_type" value="paytm" onclick="showOption('paytm')"> Paytm</div>
+                <div><input type="radio" name="upi_type" value="card" onclick="showOption('card')"> Card</div>
+                <div><input type="radio" name="upi_type" value="netbanking" onclick="showOption('netbanking')"> Net Banking</div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-md-6">
+        <div class="card p-4 text-center">
+
+            <div id="qrBox">
+                <h5>📱 Scan & Pay</h5>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=payment-demo">
+            </div>
+
+            <div id="cardBox" style="display:none;">
+                <h5>💳 Card Details</h5>
+                <input type="text" placeholder="Card Number" class="form-control mb-2">
+                <input type="text" placeholder="Expiry" class="form-control mb-2">
+                <input type="text" placeholder="CVV" class="form-control mb-2">
+            </div>
+
+            <div id="netBox" style="display:none;">
+                <h5>🏦 Bank</h5>
+                <select class="form-control">
+                    <option>SBI</option>
+                    <option>HDFC</option>
+                    <option>ICICI</option>
+                </select>
+            </div>
+
+            <hr>
+
+            <button type="button" id="payBtn" class="btn btn-success w-100">
+                Pay Now ₹{{ total }}
+            </button>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- 🔥 OVERLAY -->
+<div id="overlay" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+"></div>
+
+<!-- 🔥 POPUP -->
+<div id="popup" style="
+display:none;
+position:fixed;
+top:30%;
+left:50%;
+transform:translate(-50%, -50%);
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 0 15px gray;
+text-align:center;
+color:black;
+min-width:300px;
+">
+
+    <h3 id="msg" style="color:green;"></h3>
+
+    <button onclick="goHome()" class="btn btn-primary mt-3">
+        OK
+    </button>
+
+</div>
+
+<script>
+
+function showOption(type) {
+    document.getElementById("qrBox").style.display = "none";
+    document.getElementById("cardBox").style.display = "none";
+    document.getElementById("netBox").style.display = "none";
+
+    if(type === "phonepe" || type === "gpay" || type === "paytm") {
+        document.getElementById("qrBox").style.display = "block";
+    }
+    else if(type === "card") {
+        document.getElementById("cardBox").style.display = "block";
+    }
+    else if(type === "netbanking") {
+        document.getElementById("netBox").style.display = "block";
+    }
+}
+
+function showOnline() {
+    document.getElementById("onlineBox").style.display = "block";
+    showOption('phonepe');
+}
+
+function showCOD() {
+    document.getElementById("onlineBox").style.display = "none";
+    document.getElementById("qrBox").style.display = "none";
+    document.getElementById("cardBox").style.display = "none";
+    document.getElementById("netBox").style.display = "none";
+}
+
+document.getElementById("payBtn").onclick = function() {
+
+    let payment = document.querySelector('input[name="payment"]:checked').value;
+    let msg = "";
+
+    if(payment === "online") {
+        let method = document.querySelector('input[name="upi_type"]:checked').value;
+        msg = "Payment Successful via " + method.toUpperCase();
+    } else {
+        msg = "✅ Order Placed (Cash on Delivery)";
+    }
+
+    document.getElementById("msg").innerText = msg;
+
+    document.getElementById("popup").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+}
+
+function goHome() {
+    document.getElementById("popup").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+    window.location.href = "/";
+}
+
+</script>
+
+{% endblock %}
